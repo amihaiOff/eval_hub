@@ -15,6 +15,7 @@ dash-mantine-components = "^0.12.1"
 pytest = "^8.1.1"
 flask = "^3.0.2"
 plotly = "^5.20.0"
+dash-iconify = "^0.1.2"
 
 
 [build-system]
