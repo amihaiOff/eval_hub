@@ -1,10 +1,9 @@
 import flask
-from dash import Dash, html, dcc, Input, Output, State
+from dash import Dash, html
 import dash_mantine_components as dmc
 
-from eval_hub.helpers import create_user_avatar
-from structure import create_available_reports, create_folder_header, create_left_header, create_left_panel, \
-    create_right_panel
+from structure import create_available_reports, create_folder_header, create_left_header, create_page_content
+from callbacks import *
 
 # Initialize Flask server and Dash app
 server = flask.Flask(__name__)
@@ -32,14 +31,22 @@ def authenticate_user(username, password):
     return username == "admin" and password == "admin"
 
 
+def get_report_data():
+    from report_data_classes import generate_dummy_report_data
+    return generate_dummy_report_data()
+
+
 def create_layout():
-    return dmc.Container([
-        _create_nav_bar(),
-        dmc.Grid([
-            dmc.Col([create_right_panel()], span=11,
-                    style={'margin-left': '6rem'})
-        ])
-    ], fluid=True)
+    return dmc.NotificationsProvider([
+        dmc.Container([
+            _create_nav_bar(),
+            dmc.Grid([
+                dmc.Col([create_page_content(get_report_data())], span=11,
+                        style={'margin-left': '6rem'})
+            ])
+        ], fluid=True)
+    ])
+
 
 app.layout = create_layout()
 

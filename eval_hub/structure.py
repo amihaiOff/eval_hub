@@ -1,26 +1,26 @@
 import dash_mantine_components as dmc
 from dash import dcc, html
 from dash_iconify import DashIconify
-import plotly.express as px
+from plotly.io import from_json
 
 from helpers import create_user_avatar
+from report_data_classes import (
+    ReportData,
+    GraphBlock,
+    Comment,
+    GraphParameters,
+    GraphData
+)
+from names import IDs
 
-dummy_data = px.data.iris()
 
-LOTS_OF_TEXT = """
-In the sprawling expanse of the universe, our tiny blue planet Earth is but a speck of dust. Yet, upon this minuscule orb, the dance of life unfolds in magnificent complexity. From the depths of the oceans to the peaks of the tallest mountains, life thrives in all its diversity. Each organism, from the tiniest bacterium to the mightiest whale, plays its part in the intricate web of existence.
-
-Humanity, with its remarkable intelligence and boundless curiosity, has emerged as a dominant force on Earth. Through millennia of innovation and discovery, we have reshaped the world around us, harnessing the power of nature and bending it to our will. From the invention of the wheel to the exploration of outer space, our quest for knowledge and understanding knows no bounds.
-
-Yet, for all our achievements, we stand at a crossroads. The same ingenuity that has propelled us to such great heights now threatens to be our undoing. Climate change, pollution, and dwindling resources loom large on the horizon, casting a shadow over the future of our planet. If we are to ensure the survival of our species and the myriad others with whom we share this world, we must act swiftly and decisively.
-"""
 
 SOME_TEXT = "In the sprawling expanse of the universe, our tiny blue planet Earth is but a speck of dust. Yet, upon this minuscule orb, the dance of life unfolds in magnificent complexity. From the depths of the oceans to the peaks of the tallest mountains, life thrives in all its diversity. Each organism, from the tiniest bacterium to the mightiest whale, plays its part in the intricate web of existence."
 
 
 def create_left_header():
     return dmc.Grid([
-        create_user_avatar(size='lg'),
+        create_user_avatar('dummy user', size='lg'),  # todo: replace with actual user
         dmc.Stack([
             dmc.Text("Rappi eval", weight=700, size="xl", style={"margin-bottom": "0.1"}),
             dmc.Text("Amihai", weight=300, size="l", style={"margin-top": "0.1"}),
@@ -59,57 +59,79 @@ def create_left_panel():
     ], style={'background': '#FBFBFA', 'border-right': '1px solid gray', 'height': '100vh'})
 
 
-def create_right_header():
+def create_report_header(title: str, description: str):
     return dmc.Stack([
-        dmc.Title('Rappi eval', order=1, color='gray', align='center',
+        dmc.Title(title, order=1, color='gray', align='center',
                   style={'margin-bottom': '1rem', 'font-size': 'xxx-large'}),
-        dmc.Text(LOTS_OF_TEXT, color='gray', size='md', weight=400)
+        dmc.Text(description, color='gray', size='md', weight=400)
     ], style={'margin-top': '1rem', 'border-bottom': '1px solid lightgray', 'padding-bottom': '1rem', 'width': '100%'}
     )
 
 
-def create_graph_block():
+def create_graph_params_text(graph_parameters: GraphParameters):
+    children = []
+    for name, value in graph_parameters.items():
+        children.extend([html.Span(f'{name}: ', style={'font-weight': 'bold'}), value, html.Br()])
+
+    return html.P(children)
+
+
+def create_graph_block(title: str,
+                       graph_parameters: GraphParameters,
+                       description: str,
+                       graph_data: GraphData):
     return dmc.Stack([
         dmc.Group([
-            dmc.Title('Graph', order=2, color='gray', align='center',
-                      style={'margin-bottom': '1rem'}),
-            # dmc.ActionIcon(
-            #         DashIconify(icon='lets-icons:comment-light', color='gray', width=40),
-            #         size='xl',
-            # )
+            dmc.Title(title, order=2, color='gray', align='center',
+                      style={'margin-bottom': '0.5rem'}),
+            dmc.ActionIcon(
+                    DashIconify(icon="carbon:close", color='gray', width=30),
+                    size='xl',
+            )
         ], position='apart'),
-        dmc.Text('This is a graph', color='gray', size='md', weight=400, align='left'),
-        dcc.Graph(figure=px.scatter(dummy_data, x="sepal_width", y="sepal_length"))
+        dmc.Accordion([
+           dmc.AccordionItem([
+               dmc.AccordionControl('Parameters', style={'color': 'gray', 'padding': 0, 'border-bottom': 'none'}),
+               dmc.AccordionPanel([
+                   create_graph_params_text(graph_parameters)
+               ], style={'color': 'gray'})
+           ], value='parameters', style={'border-bottom': 'none'}),
+        ], chevronPosition='left',
+           style={'width': '30%', 'margin-bottom': '1rem'}),
+        dmc.Text(description, color='gray', size='md', weight=400, align='left'),
+        dcc.Graph(figure=from_json(graph_data))
     ], style={'margin-top': '1rem',
               'padding-bottom': '1rem',
               'width': '100%'}
     )
 
 
-def create_comment():
+def create_comment(comment: Comment):
     return dmc.Stack([
         dmc.Group([
-            create_user_avatar(size='sm'),
-            dmc.Text('Amihai', color='gray', size='md', weight=700, align='left')
+            create_user_avatar(comment.user, size='sm'),
+            dmc.Text(comment.user, color='gray', size='md', weight=700, align='left')
         ]),
-        dmc.Text(SOME_TEXT, color='gray', size='md', weight=400, align='left')
+        dmc.Text(comment.comment_text, color='gray', size='md', weight=400, align='left')
     ], style={'margin-bottom': '1rem'})
 
 
-def create_comment_input():
+def create_comment_input(graph_block_id: str):
     return dmc.Textarea(
+            id={'type': IDs.COMMENT_INPUT, 'index': graph_block_id},
             placeholder='Write a comment...',
             label='',
             radius='md',
             rightSection=dmc.ActionIcon(
                     DashIconify(icon='material-symbols-light:send', color='gray', width=20),
+                    id={'type': IDs.COMMENT_SUBMIT, 'index': graph_block_id},
                     size='xl'
             ),
             rightSectionWidth=50
     )
 
 
-def create_comment_card():
+def create_comment_card(comments: list[Comment], graph_block_id: str):
     return dmc.Card([
        dmc.CardSection([
            dmc.Group([
@@ -125,34 +147,34 @@ def create_comment_card():
            inheritPadding=True,
            py="xs",
        ),
-       dmc.Stack([
-           create_comment(),
-           create_comment(),
-           create_comment(),
-           create_comment(),
-       ], style={'overflow-y': 'auto', 'height': '500px', 'margin-bottom': '1rem'}),
+       dmc.Stack([create_comment(cmt) for cmt in comments],
+                 id={'type': IDs.COMMENT_STACK, 'index': graph_block_id},
+                 style={'overflow-y': 'auto', 'height': '500px', 'margin-bottom': '1rem'}),
 
-       create_comment_input()
+       create_comment_input(graph_block_id)
     ], radius='lg', withBorder=False, style={'height': '100%'}
     )
 
 
-def create_graph_comment_block():
+def create_graph_comment_block(graph_block: GraphBlock):
     return dmc.Grid([
         dmc.Col([
-            create_graph_block(),
+            create_graph_block(graph_block.title,
+                               graph_block.graph_parameters,
+                               graph_block.description,
+                               graph_block.graph_data),
         ], span=8),
         dmc.Col([
-            create_comment_card()
+            create_comment_card(graph_block.comments, graph_block.id)
         ], span='auto', style={'height': '100%'})
     ], gutter='xs', style={'height': '700px', 'margin-bottom': '50px'}
     )
 
 
-def create_right_panel():
-    stack = [create_right_header()]
+def create_page_content(report_data: ReportData):
+    stack = [create_report_header(report_data.title, report_data.description)]
 
-    for _ in range(5):
-        stack.append(create_graph_comment_block())
+    for graph_block in report_data.graph_blocks:
+        stack.append(create_graph_comment_block(graph_block))
 
     return dmc.Stack(stack)
