@@ -14,7 +14,7 @@ from dash import (
 )
 
 from names import IDs
-from structure import create_comment, Comment
+from layout import create_comment, Comment
 
 
 @dash.callback(
@@ -33,3 +33,22 @@ def add_comment(n_clicks: int, comment_text: str):
     # todo add to backend storage
     patched_children.append(create_comment(comment))
     return patched_children
+
+
+@dash.callback(
+        Output({'type': IDs.FULL_SCREEN_MODAL, 'index': MATCH}, 'opened'),
+        Input({'type': IDs.PLOT_EXPAND, 'index': MATCH}, 'n_clicks'),
+        State({'type': IDs.PLOT_EXPAND, 'index': MATCH}, 'opened'),
+        prevent_initial_call=True
+)
+def close_modal(n_clicks: int, opened: bool):
+    return not opened
+
+
+
+@dash.callback(
+    Output(IDs.PAGE_CONTENT, 'children'),
+    Input()
+)
+def update_page(report_name):
+    report_name = 'report1'

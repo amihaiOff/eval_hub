@@ -79,7 +79,8 @@ def create_graph_params_text(graph_parameters: GraphParameters):
 def create_graph_block(title: str,
                        graph_parameters: GraphParameters,
                        description: str,
-                       graph_data: GraphData):
+                       graph_data: GraphData,
+                       graph_block_id: str):
     return dmc.Stack([
         dmc.Group([
             dmc.Title(title, order=2, color='gray', align='center',
@@ -87,19 +88,30 @@ def create_graph_block(title: str,
             dmc.ActionIcon(
                     DashIconify(icon="carbon:close", color='gray', width=30),
                     size='xl',
+                    id={'type': 'close_btn', 'index': graph_block_id}
             )
         ], position='apart'),
-        dmc.Accordion([
-           dmc.AccordionItem([
-               dmc.AccordionControl('Parameters', style={'color': 'gray', 'padding': 0, 'border-bottom': 'none'}),
-               dmc.AccordionPanel([
-                   create_graph_params_text(graph_parameters)
-               ], style={'color': 'gray'})
-           ], value='parameters', style={'border-bottom': 'none'}),
-        ], chevronPosition='left',
-           style={'width': '30%', 'margin-bottom': '1rem'}),
+        dmc.Group([
+            dmc.ActionIcon(DashIconify(icon='lucide:expand', color='gray', width=20),
+                           id={'type': IDs.PLOT_EXPAND, 'index': graph_block_id}),
+            dmc.Accordion([
+                dmc.AccordionItem([
+                    dmc.AccordionControl('Parameters', style={'color': 'gray', 'padding': 0, 'border-bottom': 'none'}),
+                    dmc.AccordionPanel([
+                        create_graph_params_text(graph_parameters)
+                    ], style={'color': 'gray'})
+                ], value='parameters', style={'border-bottom': 'none'}),
+            ], chevronPosition='left', style={'width': '30%', 'margin-bottom': '0'})
+        ]),
         dmc.Text(description, color='gray', size='md', weight=400, align='left'),
-        dcc.Graph(figure=from_json(graph_data))
+        dcc.Graph(figure=from_json(graph_data)),
+        dmc.Modal(dcc.Graph(figure=from_json(graph_data)),
+                  id={'type': IDs.FULL_SCREEN_MODAL, 'index': graph_block_id},
+                  opened=False,
+                  title='Full screen',
+                  withCloseButton=True,
+                  styles={'modal': {'width': '80vw', 'height': '70vh'}})
+
     ], style={'margin-top': '1rem',
               'padding-bottom': '1rem',
               'width': '100%'}
@@ -137,7 +149,7 @@ def create_comment_card(comments: list[Comment], graph_block_id: str):
            dmc.Group([
                dmc.Text('Discussion', color='gray', size='md', weight=400, align='left'),
                dmc.ActionIcon(
-                       DashIconify(icon="carbon:close"),
+                       DashIconify(icon="lucide:expand"),
                        color="gray",
                        variant="transparent",
                 )],
@@ -162,7 +174,8 @@ def create_graph_comment_block(graph_block: GraphBlock):
             create_graph_block(graph_block.title,
                                graph_block.graph_parameters,
                                graph_block.description,
-                               graph_block.graph_data),
+                               graph_block.graph_data,
+                               graph_block.id),
         ], span=8),
         dmc.Col([
             create_comment_card(graph_block.comments, graph_block.id)

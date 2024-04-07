@@ -2,7 +2,7 @@ import flask
 from dash import Dash, html
 import dash_mantine_components as dmc
 
-from structure import create_available_reports, create_folder_header, create_left_header, create_page_content
+from layout import create_available_reports, create_folder_header, create_left_header, create_page_content
 from callbacks import *
 
 # Initialize Flask server and Dash app
@@ -41,7 +41,9 @@ def create_layout():
         dmc.Container([
             _create_nav_bar(),
             dmc.Grid([
-                dmc.Col([create_page_content(get_report_data())], span=11,
+                dmc.Col([create_page_content(get_report_data())],
+                        id=IDs.PAGE_CONTENT,
+                        span=11,
                         style={'margin-left': '6rem'})
             ])
         ], fluid=True)
