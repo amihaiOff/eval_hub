@@ -47,7 +47,7 @@ def _create_nav_bar():
                            ], style={'margin-right': '20px'}),
 
                 dmc.Button(id='1', children='change report'),
-            ], style={'background': '#FBFBFA', 'border-right': '1px solid gray', 'height': '100vh'})
+            ], style={'border-right': '1px solid gray', 'height': '100vh'})
 
         ],
         className="sidebar",
@@ -95,15 +95,9 @@ def create_layout():
             *_create_stores(),
             *_create_modals(),
             _create_nav_bar(),
-            html.Div([create_page_content(load_report('../dummy_data/report1'))],
+            html.Div([],
                      id=IDs.PAGE_CONTENT,
                      style={'margin-left': '6rem'})
-            # dmc.Grid([
-            #     dmc.Col([],
-            #             id=IDs.PAGE_CONTENT,
-            #             span=11,
-            #             style={'margin-left': '6rem'})
-            # ])
         ], fluid=True)
     ])
 

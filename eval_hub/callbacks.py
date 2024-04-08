@@ -21,6 +21,7 @@ from report_loader import load_report
 
 
 @dash.callback(
+        Output({'type': IDs.COMMENT_INPUT, 'index': MATCH}, 'value'),
         Output({'type': IDs.COMMENT_STACK, 'index': MATCH}, 'children'),
         Input({'type': IDs.COMMENT_SUBMIT, 'index': MATCH}, 'n_clicks'),
         State({'type': IDs.COMMENT_INPUT, 'index': MATCH}, 'value'),
@@ -35,7 +36,7 @@ def add_comment(n_clicks: int, comment_text: str):
                       )
     # todo add to backend storage
     patched_children.append(create_comment(comment))
-    return patched_children
+    return '', patched_children
 
 
 @dash.callback(
@@ -92,3 +93,20 @@ def delete_plot_block_model(no_clicks: int, yes_clicks: int, styles, elem_ind: s
     elif ctx.triggered_id == IDs.DELETE_PLOT_BLOCK_MODAL_YES:
         styles[elem_ind]['display'] = 'none'
         return styles, False
+
+
+@dash.callback(
+        Output({'type': IDs.COMMENT_CARD, 'index': ALL}, 'style'),
+        Input({'type': IDs.COLLAPSE_COMMENTS_ICON, 'index': ALL}, 'n_clicks'),
+        State({'type': IDs.COMMENT_CARD, 'index': ALL}, 'style'),
+        prevent_initial_call=True
+)
+def collapse_comments(n_clicks: List[int], styles: List[dict]):
+    for lst in ctx.args_grouping:
+        for i, d in enumerate(lst):
+            if d['triggered']:
+                triggered_ind = i
+
+    print(triggered_ind)
+    styles[triggered_ind]['width'] = '20%'
+    return styles

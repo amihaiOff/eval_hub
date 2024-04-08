@@ -145,11 +145,19 @@ def create_comment_card(comments: list[Comment], graph_block_id: str):
        dmc.CardSection([
            dmc.Group([
                dmc.Text('Discussion', color='gray', size='md', weight=400, align='left'),
-               dmc.ActionIcon(
-                       DashIconify(icon="lucide:expand"),
-                       color="gray",
-                       variant="transparent",
-                )],
+               dmc.Group([
+                   dmc.ActionIcon(
+                           DashIconify(icon="lucide:expand"),
+                           color="gray",
+                           variant="transparent",
+                   ),
+                   dmc.ActionIcon(
+                           DashIconify(icon="pajamas:collapse-right",
+                                       color="gray"),
+                           id={'type': IDs.COLLAPSE_COMMENTS_ICON, 'index': graph_block_id}
+                   )
+               ], position='right'),
+           ],
                position="apart"),
        ],
            withBorder=True,
@@ -161,7 +169,10 @@ def create_comment_card(comments: list[Comment], graph_block_id: str):
                  style={'overflow-y': 'auto', 'height': '500px', 'margin-bottom': '1rem'}),
 
        create_comment_input(graph_block_id)
-    ], radius='lg', withBorder=False, style={'height': '100%'}
+    ], radius='lg',
+       withBorder=False,
+       style={'height': '100%'},
+       id={'type': IDs.COMMENT_CARD, 'index': graph_block_id}
     )
 
 

@@ -15,3 +15,5 @@ class IDs:
     CUSTOMER_DD = "customer_dd"
     PRODUCT_DD = "product_dd"
     FLURRY_ID_DD = "flurry_id_dd"
+    COLLAPSE_COMMENTS_ICON = "collapse_comments_icon"
+    COMMENT_CARD = "comment_card"
