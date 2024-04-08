@@ -12,3 +12,6 @@ class IDs:
     DELETE_PLOT_BLOCK_ICON = "delete_plot_block_icon"
     DELETE_PLOT_BLOCK_STORE = "delete_plot_block_store"
     PLOT_BLOCK = "plot_block"
+    CUSTOMER_DD = "customer_dd"
+    PRODUCT_DD = "product_dd"
+    FLURRY_ID_DD = "flurry_id_dd"

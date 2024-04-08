@@ -15,9 +15,6 @@ from names import IDs
 
 
 
-SOME_TEXT = "In the sprawling expanse of the universe, our tiny blue planet Earth is but a speck of dust. Yet, upon this minuscule orb, the dance of life unfolds in magnificent complexity. From the depths of the oceans to the peaks of the tallest mountains, life thrives in all its diversity. Each organism, from the tiniest bacterium to the mightiest whale, plays its part in the intricate web of existence."
-
-
 def create_left_header():
     return dmc.Grid([
         create_user_avatar('dummy user', size='lg'),  # todo: replace with actual user

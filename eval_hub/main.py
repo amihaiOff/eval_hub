@@ -17,9 +17,35 @@ def _create_nav_bar():
         [
             dmc.Stack([
                 create_left_header(),
-                dmc.Space(h=50),
-                create_folder_header(),
-                create_available_reports(),
+                dmc.Space(h=30),
+                dmc.Title('Select Report', order=3),
+                dmc.Select(id=IDs.CUSTOMER_DD,
+                           placeholder='Select customer',
+                           label='Customer',
+                           searchable=True,
+                           data=[
+                                 {'label': 'Rappi', 'value': 'rappi'},
+                                 {'label': 'Uber', 'value': 'uber'},
+                           ], style={'margin-right': '20px'}),
+
+                dmc.Select(id=IDs.PRODUCT_DD,
+                           placeholder='Select product',
+                           label='Product',
+                           searchable=True,
+                           data=[
+                               {'label': 'Rappi', 'value': 'rappi'},
+                               {'label': 'Uber', 'value': 'uber'},
+                           ], style={'margin-right': '20px'}),
+                dmc.Space(h=20),
+                dmc.Select(id=IDs.FLURRY_ID_DD,
+                           placeholder='Select flurry id',
+                           label='Flurry ID',
+                           searchable=True,
+                           data=[
+                               {'label': 'Rappi', 'value': 'rappi'},
+                               {'label': 'Uber', 'value': 'uber'},
+                           ], style={'margin-right': '20px'}),
+
                 dmc.Button(id='1', children='change report'),
             ], style={'background': '#FBFBFA', 'border-right': '1px solid gray', 'height': '100vh'})
 
