@@ -88,7 +88,7 @@ def create_graph_block(title: str,
             dmc.ActionIcon(
                     DashIconify(icon="carbon:close", color='gray', width=30),
                     size='xl',
-                    id={'type': 'close_btn', 'index': graph_block_id}
+                    id={'type': IDs.DELETE_PLOT_BLOCK_ICON, 'index': graph_block_id}
             )
         ], position='apart'),
         dmc.Group([
@@ -115,7 +115,7 @@ def create_graph_block(title: str,
     ], style={'margin-top': '1rem',
               'padding-bottom': '1rem',
               'width': '100%'}
-    )
+    , )
 
 
 def create_comment(comment: Comment):
@@ -180,7 +180,9 @@ def create_graph_comment_block(graph_block: GraphBlock):
         dmc.Col([
             create_comment_card(graph_block.comments, graph_block.id)
         ], span='auto', style={'height': '100%'})
-    ], gutter='xs', style={'height': '700px', 'margin-bottom': '50px'}
+    ], gutter='xs',
+       id={'type': IDs.PLOT_BLOCK, 'index': graph_block.id},
+       style={'height': '700px', 'margin-bottom': '50px'}
     )
 
 

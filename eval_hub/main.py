@@ -1,9 +1,11 @@
 import flask
-from dash import Dash, html
+from dash import Dash, html, dcc
 import dash_mantine_components as dmc
 
-from layout import create_available_reports, create_folder_header, create_left_header, create_page_content
+from layout import create_available_reports, create_folder_header, create_left_header
 from callbacks import *
+from names import IDs
+
 
 # Initialize Flask server and Dash app
 server = flask.Flask(__name__)
@@ -17,8 +19,8 @@ def _create_nav_bar():
                 create_left_header(),
                 dmc.Space(h=50),
                 create_folder_header(),
-                create_available_reports()
-
+                create_available_reports(),
+                dmc.Button(id='1', children='change report'),
             ], style={'background': '#FBFBFA', 'border-right': '1px solid gray', 'height': '100vh'})
 
         ],
@@ -31,26 +33,56 @@ def authenticate_user(username, password):
     return username == "admin" and password == "admin"
 
 
-def get_report_data():
-    from report_data_classes import generate_dummy_report_data
-    return generate_dummy_report_data()
+def _create_delete_plot_block_modal():
+    return dmc.Modal([
+        dmc.Text('Are you sure you want to delete this plot?'),
+        dmc.Space(h=20),
+        dmc.Group([
+            dmc.Button('Yes',
+                       id=IDs.DELETE_PLOT_BLOCK_MODAL_YES,
+                       color='red'),
+            dmc.Button('No',
+                       id=IDs.DELETE_PLOT_BLOCK_MODAL_NO,
+                       color='gray')
+        ], position='right')
+    ],
+            id=IDs.DELETE_PLOT_BLOCK_MODAL,
+            title='Delete plot block',
+)
+
+
+def _create_modals():
+    return [
+        _create_delete_plot_block_modal()
+    ]
+
+
+def _create_stores():
+    return [
+        dcc.Store(id=IDs.DELETE_PLOT_BLOCK_STORE)
+    ]
 
 
 def create_layout():
     return dmc.NotificationsProvider([
         dmc.Container([
+            *_create_stores(),
+            *_create_modals(),
             _create_nav_bar(),
-            dmc.Grid([
-                dmc.Col([create_page_content(get_report_data())],
-                        id=IDs.PAGE_CONTENT,
-                        span=11,
-                        style={'margin-left': '6rem'})
-            ])
+            html.Div([create_page_content(load_report('../dummy_data/report1'))],
+                     id=IDs.PAGE_CONTENT,
+                     style={'margin-left': '6rem'})
+            # dmc.Grid([
+            #     dmc.Col([],
+            #             id=IDs.PAGE_CONTENT,
+            #             span=11,
+            #             style={'margin-left': '6rem'})
+            # ])
         ], fluid=True)
     ])
 
 
-app.layout = create_layout()
+app.layout = create_layout
 
 
 @server.route('/health')
