@@ -56,12 +56,12 @@ def _create_delete_plot_block_modal():
 )
 
 
-def create_textblock() -> html.Div:
+def create_textblock(block_ind: int, text: str = '') -> List[Component]:
     """
     Create a text block to add to the report
     :return:
     """
-    return html.Div([dsn.DashSummernote(
+    return [html.Div([dsn.DashSummernote(
             toolbar=[
                 ["style", ["style"]],
                 ["font", ["bold", "underline", "clear"]],
@@ -71,11 +71,12 @@ def create_textblock() -> html.Div:
                 ["insert", ["link", "picture", "video"]],
                 ["view", ["fullscreen", "codeview"]]
             ],
+            value=text
     )
     ], style={'width': '80%', 'margin-left': '5rem', 'margin-top': '1rem', 'margin-bottom': '1rem'},
             id={'type':  IDs.PLOT_BLOCK_TEXTAREA,
-                'index': random.randint(0, 1000)}
-    )
+                'index': block_ind}
+    )]
 
 
 def create_comments_section_open_icon():
@@ -104,6 +105,8 @@ def create_add_text_block_button():
 
 
 def create_new_block(title: str, block_ind: int, children: List[Component]):
+    if not title:
+        title = 'asd '
     return dmc.AccordionMultiple([
             dmc.AccordionItem([
                 dmc.AccordionControl([
@@ -111,13 +114,14 @@ def create_new_block(title: str, block_ind: int, children: List[Component]):
                         dmc.Title(title, order=2, color='gray', align='left', style={'margin-bottom': '0'}),
                         dmc.ActionIcon(DashIconify(icon='carbon:close', color='gray', width=20),
                                        id={'type': IDs.DELETE_BLOCK_ICON, 'index': block_ind})
-                    ])
+                    ], position='apart')
                 ], className='block-title'),
                 dmc.AccordionPanel(children,
                                    id={'type': IDs.BLOCK_CONTENT, 'index': block_ind})
-            ], style={'border-bottom': 'none'})
+            ], value=title, style={'border-bottom': 'none'})
         ],
             value=[title],
+            chevronPosition='left',
             className='block',
             id={'type': IDs.PLOT_BLOCK, 'index': block_ind}
     )

@@ -1,7 +1,8 @@
 import flask
 from dash import Dash
 
-from eval_hub.utils import _create_modals, _create_nav_bar, _create_stores
+from eval_hub.utils import _create_modals, _create_stores
+from eval_hub.layout import _create_nav_bar
 from callbacks import *
 from names import IDs
 

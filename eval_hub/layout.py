@@ -1,12 +1,19 @@
 from typing import List
 
 import dash_mantine_components as dmc
+from dash import dcc, html
+from dash.development.base_component import Component
 from dash_iconify import DashIconify
+from plotly.io import from_json
 
-from eval_hub.components import create_add_text_block_button, create_new_block
-from eval_hub.utils import create_plot_block
+from eval_hub.components import create_add_text_block_button, create_new_block, create_textblock
+from eval_hub.names import IDs
+from eval_hub.report_data_classes import GraphData, GraphParameters
+from eval_hub.utils import create_graph_params_text
 from helpers import create_user_avatar
 from report_data_classes import (
+    PlotBlock,
+    TextBlock,
     ReportData,
     Comment,
     GraphParameters,
@@ -72,9 +79,7 @@ def create_graph_block(title: str,
                        graph_block_id: str,
                        block_ind: int):
 
-    return create_new_block(title,
-                            block_ind,
-                            create_plot_block(graph_parameters,graph_data, description, graph_block_id))
+    return
     # return dmc.Stack([
     #     dmc.AccordionMultiple([
     #         dmc.AccordionItem([
@@ -161,23 +166,34 @@ def create_comments_section(title: str, comments: List[Comment]):
 
 def create_page_content(report_data: ReportData):
     plot_stack = []
-    for i, graph_block in enumerate(report_data.graph_blocks):
-        plot_stack.append(create_graph_block(graph_block.title,
-                                             graph_block.graph_parameters,
-                                             graph_block.description,
-                                             graph_block.graph_data,
-                                             graph_block.id,
-                                             block_ind=i))
+    for i, block in enumerate(report_data.blocks):
+        if isinstance(block, PlotBlock):
+            block_contents = create_plot_block(block.graph_parameters,
+                                               block.graph_data,
+                                               block.description,
+                                               block.id)
+            plot_stack.append(create_new_block(block.title,
+                                               block_ind=i,
+                                               children=block_contents))
+
+        elif isinstance(block, TextBlock):
+            block_contents = create_textblock(text=block.text,
+                                              block_ind=i)
+            plot_stack.append(create_new_block(title="",
+                                               block_ind=i,
+                                               children=block_contents))
 
         plot_stack.append(create_add_text_block_button())
+
+    first_plot_block: PlotBlock = report_data.get_first_plot_block()
     main_grid = dmc.Grid([
         dmc.Col(plot_stack,
                 span=9,
                 className='app-column',
                 id=IDs.PLOTS_COL,
                 style={'border-right': '1px solid lightgray'}),
-        dmc.Col([create_comments_section(report_data.graph_blocks[0].title,
-                                         report_data.graph_blocks[0].comments)],
+        dmc.Col([create_comments_section(first_plot_block.title,
+                                         first_plot_block.comments)],
                 span=3,
                 style={'overflow-y': 'auto', 'height': '100vh'},
                 className='app-column',
@@ -187,3 +203,78 @@ def create_page_content(report_data: ReportData):
     header = create_report_header(report_data.title, report_data.description)
     page_stack = [header, main_grid]
     return dmc.Stack(page_stack)
+
+
+def _create_nav_bar():
+    return html.Div(
+        [
+            dmc.Stack([
+                create_left_header(),
+                dmc.Space(h=30),
+                dmc.Title('Select Report', order=3),
+                dmc.Select(id=IDs.CUSTOMER_DD,
+                           placeholder='Select customer',
+                           label='Customer',
+                           searchable=True,
+                           data=[
+                                 {'label': 'Rappi', 'value': 'rappi'},
+                                 {'label': 'Uber', 'value': 'uber'},
+                           ], style={'margin-right': '20px'}),
+
+                dmc.Select(id=IDs.PRODUCT_DD,
+                           placeholder='Select product',
+                           label='Product',
+                           searchable=True,
+                           data=[
+                               {'label': 'Rappi', 'value': 'rappi'},
+                               {'label': 'Uber', 'value': 'uber'},
+                           ], style={'margin-right': '20px'}),
+                dmc.Space(h=20),
+                dmc.Select(id=IDs.FLURRY_ID_DD,
+                           placeholder='Select flurry id',
+                           label='Flurry ID',
+                           searchable=True,
+                           data=[
+                               {'label': 'Rappi', 'value': 'rappi'},
+                               {'label': 'Uber', 'value': 'uber'},
+                           ], style={'margin-right': '20px'}),
+
+                dmc.Button(id='1', children='change report'),
+                dmc.Button(id=IDs.LOGIN_BTN, children='Login', color='blue'),
+            ], style={'border-right': '1px solid gray', 'height': '100vh'})
+
+        ],
+        className="sidebar",
+    )
+
+
+def create_params_hover_card(
+        graph_parameters: GraphParameters,
+) -> dmc.HoverCard:
+    return dmc.HoverCard([
+        dmc.HoverCardTarget([
+            DashIconify(icon='jam:settings-alt', color='gray', width=20),
+        ]),
+        dmc.HoverCardDropdown([
+            create_graph_params_text(graph_parameters)
+        ]),
+    ], withArrow=True, position='right', shadow='md')
+
+
+def create_plot_block(
+        graph_parameters: GraphParameters,
+        graph_data: GraphData,
+        description: str,
+        graph_block_id: str
+) -> List[Component]:
+    return [dmc.Group([
+        create_params_hover_card(graph_parameters),
+        dmc.ActionIcon(
+                DashIconify(icon="mdi:comments-text", color='gray', width=30),
+                size='xl',
+                id={'type': IDs.COMMENT_ICON, 'index': graph_block_id}
+        ),
+    ], position='apart'),
+    dmc.Text(description, color='gray', size='md', weight=400, align='left'),
+    dcc.Graph(figure=from_json(graph_data)),
+]

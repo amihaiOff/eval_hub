@@ -18,7 +18,7 @@ from dash import (
 from dash.exceptions import PreventUpdate
 
 from eval_hub.utils import find_add_text_block_btn
-from eval_hub.components import create_comments_section_open_icon, create_textblock
+from eval_hub.components import create_comments_section_open_icon, create_new_block, create_textblock
 from names import IDs
 from layout import create_comment, Comment, create_page_content, create_comments_section
 from report_loader import load_report
@@ -48,7 +48,9 @@ def add_comment(n_clicks: int, comment_text: str):
     Output(IDs.PAGE_CONTENT, 'children'),
     Output(IDs.COMMENT_STORE, 'data'),
     Output(IDs.SELECTED_PLOT_ID_STORE, 'data'),
+    Output(IDs.LATEST_BLOCK_IND, 'data', allow_duplicate=True),
     Input('1', 'n_clicks'),
+    prevent_initial_call='initial_duplicate'
 )
 def update_page(n_clicks):
     REPORTS_PATH = '../dummy_data'
@@ -58,10 +60,11 @@ def update_page(n_clicks):
        report_name = 'report2'
 
     report_data = load_report(f'{REPORTS_PATH}/{report_name}')
-    first_graph_block = report_data.graph_blocks[0]
+    first_graph_block = report_data.get_first_plot_block()
     return create_page_content(report_data), \
         report_data.get_comments_as_dict(), \
-        first_graph_block.id
+        first_graph_block.id, \
+        len(report_data.blocks)
 
 
 @dash.callback(
@@ -88,7 +91,7 @@ def delete_plot_block_icon(n_clicks: Union[int, List[int]]):
         State(IDs.DELETE_PLOT_BLOCK_STORE, 'data'),
         config_prevent_initial_callbacks=True
 )
-def delete_plot_block_model(no_clicks: int, yes_clicks: int, children, elem_ind: str):
+def delete_plot_block_model(n_clicks: int, yes_clicks: int, children, elem_ind: str):
     if ctx.triggered_id == IDs.DELETE_PLOT_BLOCK_MODAL_NO:
         return dash.no_update, False
     elif ctx.triggered_id == IDs.DELETE_PLOT_BLOCK_MODAL_YES:
@@ -151,28 +154,33 @@ def collapse_comments(n_clicks, comments: dict, selected_plot_id: str, span: int
     if span == 3:
         plot_col_span = 11
         comments_col_span = 1
-        return [create_comments_section_open_icon], comments_col_span, plot_col_span
-    else:
-        plot_col_span = 9
-        comments_col_span = 3
-        comments = [Comment(**cmt) for cmt in comments[selected_plot_id]]
-        return create_comments_section(selected_plot_id, comments), comments_col_span, plot_col_span
+        return [create_comments_section_open_icon], plot_col_span, comments_col_span
+
+    plot_col_span = 9
+    comments_col_span = 3
+    comments = [Comment(**cmt) for cmt in comments[selected_plot_id]]
+    return create_comments_section(selected_plot_id, comments), comments_col_span, plot_col_span
 
 
 @dash.callback(
         Output(IDs.PLOTS_COL, 'children', allow_duplicate=True),
+        Output(IDs.LATEST_BLOCK_IND, 'data'),
         Input({'type': IDs.NEW_BLOCK_BTN, 'index': ALL}, 'n_clicks'),
         State(IDs.PLOTS_COL, 'children'),
+        State(IDs.LATEST_BLOCK_IND, 'data'),
         config_prevent_initial_callbacks=True
 )
-def add_textarea(n_clicks, children):
+def add_textarea(n_clicks, children, latest_block_ind: int):
     add_textarea_btn_id = ctx.triggered_id
     patched_children = Patch()
 
+    latest_block_ind += 1
     insert_ind = find_add_text_block_btn(children, add_textarea_btn_id)
-    new_text_block = create_textblock()
+    new_text_block = create_new_block(title="",
+                                      block_ind=latest_block_ind,
+                                      children=create_textblock(latest_block_ind))
     patched_children.insert(insert_ind, new_text_block)
-    return patched_children
+    return patched_children, latest_block_ind
 
 
 dash.clientside_callback("""
