@@ -6,7 +6,7 @@ from pathlib import Path
 from report_data_classes import (
     ReportData,
     GraphBlock,
-    Comment,
+    Comment
 )
 
 

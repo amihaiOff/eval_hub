@@ -25,3 +25,39 @@
     opacity: 1;
     color: black;
 }
+
+.app-column {
+    height: 800px; /* Set a fixed height for each column */
+    overflow-y: auto; /* Enable vertical scrolling */
+    /*margin-right: 20px; !* Add some margin between columns *!*/
+    scrollbar-width: none;
+}
+
+.new-block {
+    /*margin-left: 5rem;*/
+    /*margin-right: 5rem;*/
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    color: lightgray;
+    border: lightgray;
+    border: dashed 1px;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.new-block:hover {
+    border-color: gray;
+    color: gray;
+    /*border: solid;*/
+}
+
+.block-title {
+    color: gray;
+    padding: 0;
+    border-bottom: none;
+}
+
+.block {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    width: 100%;
+}

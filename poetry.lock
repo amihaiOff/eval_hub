@@ -224,6 +224,17 @@ files = [
 ]
 
 [[package]]
+name = "dash-summernote"
+version = "0.0.1"
+description = "summernote for dash"
+optional = false
+python-versions = "*"
+files = [
+    {file = "dash_summernote-0.0.1-py3-none-any.whl", hash = "sha256:879e9a1e4d2f4d498fefdd63a532925bfdd4fab81fbf8612fb6c8a56dc05c8e0"},
+    {file = "dash_summernote-0.0.1.tar.gz", hash = "sha256:bdf07d57ae2dbc7c6cdc1a964402233d95f3f01b36d686d5e7ce8cbe5cf9f696"},
+]
+
+[[package]]
 name = "dash-table"
 version = "5.0.0"
 description = "Dash table"
@@ -736,4 +747,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "de922336377d88b4b1ae2e5adabaca198c20592f994d1936d06e362744b3a484"
+content-hash = "1356a52bd63506879ea3fecf548b4bbd884b2c9f06d3bb4ad98abba0b78186d6"
