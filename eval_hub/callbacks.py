@@ -32,7 +32,7 @@ from report_loader import load_report
         State(IDs.SELECTED_PLOT_ID_STORE, 'data'),
         prevent_initial_call=True
 )
-def add_comment(n_clicks: int, comment_text: str):
+def add_comment(n_clicks: int, comment_text: str, selected_plot_id: int):
     patched_children = Patch()
     comment = Comment(id=str(uuid.uuid4()),
                       comment_text=comment_text,
@@ -174,6 +174,7 @@ def add_textarea(n_clicks, children, latest_block_ind: int):
     add_textarea_btn_id = ctx.triggered_id
     patched_children = Patch()
 
+    print(latest_block_ind)
     latest_block_ind += 1
     insert_ind = find_add_text_block_btn(children, add_textarea_btn_id)
     new_text_block = create_new_block(title="",

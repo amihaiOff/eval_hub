@@ -72,58 +72,6 @@ def create_report_header(title: str, description: str):
     )
 
 
-def create_graph_block(title: str,
-                       graph_parameters: GraphParameters,
-                       description: str,
-                       graph_data: GraphData,
-                       graph_block_id: str,
-                       block_ind: int):
-
-    return
-    # return dmc.Stack([
-    #     dmc.AccordionMultiple([
-    #         dmc.AccordionItem([
-    #             dmc.AccordionControl(dmc.Title(title, order=2, color='gray', align='left', style={'margin-bottom': '0'}),
-    #                                  className='block-title'
-    #                                  ),
-    #             dmc.AccordionPanel([
-    #                 dmc.Group([
-    #                     dmc.HoverCard([
-    #                         dmc.HoverCardTarget([
-    #                             DashIconify(icon='jam:settings-alt', color='gray', width=20),
-    #                         ]),
-    #                         dmc.HoverCardDropdown([
-    #                             create_graph_params_text(graph_parameters)
-    #                         ]),
-    #                     ], withArrow=True, position='right', shadow='md'),
-    #                     dmc.Group([
-    #                         dmc.ActionIcon(
-    #                                 DashIconify(icon="mdi:comments-text", color='gray', width=30),
-    #                                 size='xl',
-    #                                 id={'type': IDs.COMMENT_ICON, 'index': graph_block_id}
-    #                         ),
-    #                         dmc.ActionIcon(
-    #                                 DashIconify(icon="carbon:close", color='gray', width=30),
-    #                                 size='xl',
-    #                                 id={'type': IDs.DELETE_PLOT_BLOCK_ICON, 'index': graph_block_id}
-    #                         )
-    #                     ], position='right')
-    #
-    #                 ], position='apart'),
-    #
-    #                 dmc.Text(description, color='gray', size='md', weight=400, align='left'),
-    #                 dcc.Graph(figure=from_json(graph_data)),
-    #
-    #             ], id={'type': IDs.BLOCK_CONTENT, 'index': graph_block_id})
-    #         ], value=title, style={'border-bottom': 'none'})
-    #     ], value=[title]),
-    # ], style={'margin-top': '1rem',
-    #           'padding-bottom': '1rem',
-    #           'width': '100%'},
-    #    id={'type': IDs.PLOT_BLOCK, 'index': graph_block_id}
-    # )
-
-
 def create_comment(comment: Comment):
     return dmc.Stack([
         dmc.Group([
@@ -183,7 +131,7 @@ def create_page_content(report_data: ReportData):
                                                block_ind=i,
                                                children=block_contents))
 
-        plot_stack.append(create_add_text_block_button())
+        plot_stack.append(create_add_text_block_button(i))
 
     first_plot_block: PlotBlock = report_data.get_first_plot_block()
     main_grid = dmc.Grid([
@@ -198,7 +146,7 @@ def create_page_content(report_data: ReportData):
                 style={'overflow-y': 'auto', 'height': '100vh'},
                 className='app-column',
                 id=IDs.COMMENTS_COL)
-    ])
+    ], justify='center')
 
     header = create_report_header(report_data.title, report_data.description)
     page_stack = [header, main_grid]

@@ -8,7 +8,7 @@ from names import IDs
 
 
 def find_add_text_block_btn(children: List[dict], search_id: Dict[str, str]) -> int:
-    search_id = {'type': IDs.NEW_BLOCK_BTN_TOOLTIP, 'index': search_id['index']}
+    search_id = {'type': IDs.NEW_BLOCK_BTN, 'index': search_id['index']}
     for chl_id, d in enumerate(children):
         if d['props']['id'] == search_id:
             return chl_id
@@ -28,7 +28,7 @@ def _create_stores():
         dcc.Store(id=IDs.USER_AUTH_STORE, storage_type='local'),
         dcc.Store(id=IDs.COMMENT_STORE),
         dcc.Store(id=IDs.SELECTED_PLOT_ID_STORE),
-        dcc.Store(id=IDs.LATEST_BLOCK_IND)
+        dcc.Store(id=IDs.LATEST_BLOCK_IND, storage_type='memory', data=0)
     ]
 
 

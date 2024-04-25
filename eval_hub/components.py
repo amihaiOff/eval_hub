@@ -86,22 +86,23 @@ def create_comments_section_open_icon():
                           id=IDs.COLLAPSE_COMMENTS_ICON)
 
 
-def create_add_text_block_button():
-    return dmc.Tooltip([
-        dmc.Button('+',
+def create_add_text_block_button(index: int) -> dmc.Button:
+    # return dmc.Tooltip([
+    return dmc.Button('+',
                    variant='outline',
-                   className='new-block',
+                   className='new-block-btn',
+                   styles={'display': 'none'},
                    size='lg',
                    radius='xl',
-                   id={'type': IDs.NEW_BLOCK_BTN, 'index': random.randint(0, 200)}
+                   id={'type': IDs.NEW_BLOCK_BTN, 'index': index}
                    )
-    ],
-            label='New text block',
-            openDelay=200,
-            withArrow=True,
-            position='left',
-            id={'type': IDs.NEW_BLOCK_BTN_TOOLTIP, 'index': random.randint(0, 200)}
-            )
+    # ],
+    #         label='New text block',
+    #         openDelay=200,
+    #         withArrow=True,
+    #         position='left',
+    #         id={'type': IDs.NEW_BLOCK_BTN_TOOLTIP, 'index': index}
+    #         )
 
 
 def create_new_block(title: str, block_ind: int, children: List[Component]):
